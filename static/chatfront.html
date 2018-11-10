@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <title>Title</title>
+</head>
+<body>
+<div class="ContentWrapper">
+
+    <div class="TextFieldsWrapper">
+        <div class="MsgLog" id="MessageLog"></div>
+        <div class="UList" id="UserList"></div>
+    </div>
+<div class="InputWrapper">
+    <div class="SendWrapper">
+        <button id="SendMessage" onclick="sendmess()" >Send Message</button>
+        <input type="text" id="MessageField">
+    </div>
+
+    <div class="UserWrapper">
+        <button id="CommitUser">Set Name</button>
+        <input type="text" id="UnameField">
+    </div>
+</div>
+
+</div>
+<script>
+    // var sendbutton = document.getElementById("SendMessage");
+    var messagelog = document.getElementById("MessageLog");
+    var messagefield = document.getElementById("MessageField");
+    var socket = new WebSocket("ws://localhost:8080/echo");
+    messagelog.innerHTML = "welcome to the messenger program"
+    function sendmess() {
+        socket.send(messagefield.value);
+        messagefield.value = "";
+    };
+    socket.onopen = function () {
+        messagelog.innerHTML += "Status: Connected\n";
+    };
+    socket.onmessage = function (e) {
+        messagelog.innerHTML += "Server: " + e.data + "\n";
+    };
+</script>
+
+</body>
+</html>

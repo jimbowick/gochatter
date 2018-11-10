@@ -1,0 +1,42 @@
+.ContentWrapper {
+    display: block;
+    vertical-align: center;
+    height: 500px;
+    width: 750px;
+}
+
+.MessageLog {
+    vertical-align: top;
+    horiz-align: left;
+    height: 300px;
+    width: 150px;
+}
+
+.UList {
+    vertical-align: top;
+    horiz-align: right;
+    height: 300px;
+    width: 50px;
+}
+
+
+.TextFieldsWrapper {
+    background-color: lightsteelblue;
+    vertical-align: top;
+    horiz-align: center;
+}
+
+.SendWrapper {
+    vertical-align: bottom;
+    horiz-align: left
+}
+
+.UserWrapper {
+    vertical-align: bottom;
+    horiz-align: right;
+}
+
+.InputWrapper {
+    position: relative;
+    alignment: center;
+}
