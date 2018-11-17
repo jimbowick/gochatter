@@ -31,7 +31,7 @@
                 if (!msg.value) {
                     return false;
                 }
-                conn.send(msg.value);
+                conn.send(username + ": " + msg.value);
                 msg.value = "";
                 return false;
             };
@@ -46,7 +46,7 @@
                     var messages = evt.data.split('\n');
                     for (var i = 0; i < messages.length; i++) {
                         var item = document.createElement("div");
-                        item.innerText = username + ": " + messages[i];
+                        item.innerText = messages[i];
                         appendLog(item);
                     }
                 };
