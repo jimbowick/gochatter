@@ -22,20 +22,22 @@ func main() {
 			upgrader := websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
 			conn, err := upgrader.Upgrade(w, r, nil)
 			if err != nil {
-				log.Println(err)
+				println(err)
 				return
 			}
+			println(conn, " connected")
 			connections[conn] = true
 			go func() {
 				for {
-					_, message, _ := conn.ReadMessage()
+					_, message, err := conn.ReadMessage()
 					if err != nil {
-						conn.Close()
+						println(conn, " connection closed")
 						delete(connections, conn)
+						conn.Close()
 						return
 					}
-					log.Println("read a msg")
 					message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
+					println("someone sent: ", string(message))
 					for conny := range connections {
 						conny.WriteMessage(websocket.TextMessage, message)
 					}
