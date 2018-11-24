@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 )
 
 func main() {
-	var connections = make(map[*websocket.Conn]bool)
+	var connections = make(map[*websocket.Conn]string)
 	http.HandleFunc(
 		"/home",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -19,25 +20,26 @@ func main() {
 	http.HandleFunc(
 		"/ws",
 		func(w http.ResponseWriter, r *http.Request) {
+			name := r.URL.Query()["name"][0]
 			upgrader := websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
 			conn, err := upgrader.Upgrade(w, r, nil)
 			if err != nil {
-				println(err)
+				fmt.Println(err)
 				return
 			}
-			println(conn, " connected")
-			connections[conn] = true
+			connections[conn] = name
+			fmt.Println(name, " connected, current users ", connections)
 			go func() {
 				for {
 					_, message, err := conn.ReadMessage()
 					if err != nil {
-						println(conn, " connection closed")
+						fmt.Println(err, name, " disconnected")
 						delete(connections, conn)
 						conn.Close()
 						return
 					}
 					message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
-					println("someone sent: ", string(message))
+					println(name, "sent ", string(message))
 					for conny := range connections {
 						conny.WriteMessage(websocket.TextMessage, message)
 					}
@@ -45,8 +47,9 @@ func main() {
 			}()
 		},
 	)
+
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
+		log.Fatal(err)
 	}
 }

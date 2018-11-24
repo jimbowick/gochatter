@@ -4,6 +4,7 @@
     <title>Chat Example</title>
     <script type="text/javascript">
         window.onload = function () {
+            
             var username = "default userio"
             var conn;
             var msg = document.getElementById("msg");
@@ -36,7 +37,7 @@
                 return false;
             };
             if (window["WebSocket"]) {
-                conn = new WebSocket("ws://" + document.location.host + "/ws");
+                conn = new WebSocket("ws://" + document.location.host + "/ws?name=jerru");
                 conn.onclose = function (evt) {
                     var item = document.createElement("div");
                     item.innerHTML = "<b>Connection closed.</b>";
