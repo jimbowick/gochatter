@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,6 +18,10 @@ func main() {
 			http.ServeFile(w, r, "static/home.html")
 		},
 	)
+	type socketMessage struct {
+		Messagetype string
+		Payload     []string
+	}
 	http.HandleFunc(
 		"/ws",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +34,20 @@ func main() {
 			}
 			connections[conn] = name
 			fmt.Println(name, " connected, current users ", connections)
+			doeet := func() {
+				users := []string{}
+				for _, usr := range connections {
+					users = append(users, usr)
+				}
+				sm := &socketMessage{
+					Messagetype: "users",
+					Payload:     users}
+				jsm, _ := json.Marshal(sm)
+				for conny := range connections {
+					conny.WriteMessage(websocket.TextMessage, jsm)
+				}
+			}
+			doeet()
 			go func() {
 				for {
 					_, message, err := conn.ReadMessage()
@@ -36,6 +55,7 @@ func main() {
 						fmt.Println(err, name, " disconnected")
 						delete(connections, conn)
 						conn.Close()
+						doeet()
 						return
 					}
 					message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
