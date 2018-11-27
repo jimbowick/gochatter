@@ -23,7 +23,7 @@
                         if (obm["Messagetype"] == "chat") {
                             item.innerText = obm["Payload"];
                             appendLog(item);
-                        }else if(obm["Messagetype"]=="users") {
+                        } else if (obm["Messagetype"] == "users") {
                             document.getElementById("unamelist").innerHTML = obm["Payload"];
                         }
                     };
@@ -64,6 +64,7 @@
 
     </script>
     <style type="text/css">
+
         * {
             padding: 0;
             margin: 0;
@@ -100,7 +101,7 @@
             min-height: 250px;
             background: white;
             position: absolute;
-            top: 120px;
+            top: 100px;
             left: 550px;
             overflow: auto;
         }
@@ -169,12 +170,45 @@
             left: 255px;
         }
 
+        #chatRooms {
+            text-align: center;
+            min-width: 200px;
+            min-height: 100px;
+            max-height: 100px;
+            list-style: none;
+            background-color: white;
+            position: absolute;
+            left: 550px;
+            top: 352px;
+            overflow: auto;
+        }
+
+        #chatRooms li a {
+            text-decoration: none;
+            padding: 5px 30px 5px 10px;
+            display: block;
+        }
+
     </style>
 </head>
 <body>
 <div class="bodyCont">
     <div id="log"></div>
     <p id="unamelist"></p>
+    <ul id="chatRooms">
+        <li id="firstRoom">
+            <a href="#">General Chat</a>
+        </li>
+        <li id="secondRoom">
+            <a href="#">Buy and Sell</a>
+        </li>
+        <li id="thirdRoom">
+            <a href="#">Gamers Anonymous</a>
+        </li>
+        <li id="fourthRoom">
+            <a href="#">Freedom Zone</a>
+        </li>
+    </ul>
     <div id="allbuttons">
         <form id="form">
             <input type="submit" value="Send" id="sendButton"/>
