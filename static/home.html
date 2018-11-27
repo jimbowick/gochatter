@@ -58,7 +58,9 @@
                 if (!msg.value) {
                     return false;
                 }
-                conn.send(username + ": " + msg.value);
+                var messy = username + ": " + msg.value;
+                var finmess = JSON.stringify({message:messy});
+                conn.send(finmess);
                 msg.value = "";
                 return false;
             };
