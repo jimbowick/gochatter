@@ -22,7 +22,8 @@
                         var messages = evt.data.split('\n');
                         for (var i = 0; i < messages.length; i++) {
                             var item = document.createElement("div");
-                            item.innerText = messages[i];
+                            var obm = JSON.parse(messages[i])
+                            item.innerText = obm["message"];
                             appendLog(item);
                         }
                     };
@@ -45,11 +46,6 @@
                     log.scrollTop = log.scrollHeight - log.clientHeight;
                 }
             }
-
-            //
-            // document.getElementById("form2").onsubmit = function () {
-            //     username = document.getElementById("unamefield").value
-            // };
 
             document.getElementById("form").onsubmit = function () {
                 if (!conn) {
