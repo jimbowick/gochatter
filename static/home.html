@@ -4,6 +4,7 @@
     <title>Chat Example</title>
     <script type="text/javascript">
         window.onload = function () {
+            
             var username = "default userio"
             var conn;
             var msg = document.getElementById("msg");
@@ -23,7 +24,8 @@
                             item.innerText = obm["Payload"];
                             appendLog(item);
                         } else if (obm["Messagetype"] == "users") {
-                            document.getElementById("unamelist").innerHTML = obm["Payload"];
+                            refreshUsers (obm["Payload"])
+                            // document.getElementById("unamelist").innerHTML = obm["Payload"];
                         }else if(obm["Messagetype"] == "chatrooms"){
                             refreshRooms(obm["Payload"])
                         }
@@ -39,8 +41,9 @@
                 username = document.getElementById("unamefield").value
             }
             document.getElementById("addroom").onclick = function () {
-                var rooms = ["friend room", "trade room", "good room"];
-                refreshRooms(rooms)
+                newroomValue = document.getElementById("newroomName").value
+                var finmess = JSON.stringify({ Messagetype: "roomname", Payload: newroomValue });
+                conn.send(finmess)
             }
 
             function refreshRooms(rooms){
@@ -49,6 +52,14 @@
                     var listitem = document.createElement("li");
                     listitem.innerHTML = str
                     document.getElementById("chatRooms").appendChild(listitem)
+                });
+            }
+            function refreshUsers(users){
+                document.getElementById("unamelist").innerHTML = "";
+                users.forEach(function (str) {
+                    var listitem = document.createElement("li");
+                    listitem.innerHTML = str
+                    document.getElementById("unamelist").appendChild(listitem)
                 });
             }
 
@@ -135,6 +146,11 @@
 
         }
 
+        #newroomName {
+        position: absolute;
+        top: 27px;
+        left: 3px;
+}
         #unamefield {
             position: absolute;
             display: block;
@@ -214,8 +230,9 @@
 <body>
     <div class="bodyCont">
         <div id="log"></div>
-        <p id="unamelist"></p>
+        <ul id="unamelist"></ul>
         <button id="addroom">add chat room</button>
+        <input type="text" id="newroomName">
         <ul id="chatRooms">
             <li id="firstRoom">
                 <a href="#">General Chat</a>

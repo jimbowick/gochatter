@@ -60,6 +60,17 @@ func main() {
 					}
 					message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
 					println(name, "sent ", string(message))
+
+					//if messagetype roomname, add chat room
+
+					rooms := []string{"main roomy", "second roomy"}
+					sm := &socketMessage{
+						Messagetype: "chatrooms",
+						Payload:     rooms}
+					jsm, _ := json.Marshal(sm)
+					for conny := range connections {
+						conny.WriteMessage(websocket.TextMessage, jsm)
+					}
 					for conny := range connections {
 						conny.WriteMessage(websocket.TextMessage, message)
 					}
