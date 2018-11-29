@@ -4,7 +4,6 @@
     <title>Chat Example</title>
     <script type="text/javascript">
         window.onload = function () {
-
             var username = "default userio"
             var conn;
             var msg = document.getElementById("msg");
@@ -25,6 +24,8 @@
                             appendLog(item);
                         } else if (obm["Messagetype"] == "users") {
                             document.getElementById("unamelist").innerHTML = obm["Payload"];
+                        }else if(obm["Messagetype"] == "chatrooms"){
+                            refreshRooms(obm["Payload"])
                         }
                     };
                 } else {
@@ -36,7 +37,19 @@
             }
             document.getElementById("setunamebutton").onclick = function () {
                 username = document.getElementById("unamefield").value
-                appendLog(username + "has entered the chat room.")
+            }
+            document.getElementById("addroom").onclick = function () {
+                var rooms = ["friend room", "trade room", "good room"];
+                refreshRooms(rooms)
+            }
+
+            function refreshRooms(rooms){
+                document.getElementById("chatRooms").innerHTML = "";
+                rooms.forEach(function (str) {
+                    var listitem = document.createElement("li");
+                    listitem.innerHTML = str
+                    document.getElementById("chatRooms").appendChild(listitem)
+                });
             }
 
             function appendLog(item) {
@@ -55,7 +68,7 @@
                     return false;
                 }
                 var messy = username + ": " + msg.value;
-                var finmess = JSON.stringify({Messagetype: "chat", Payload: messy});
+                var finmess = JSON.stringify({ Messagetype: "chat", Payload: messy });
                 conn.send(finmess);
                 msg.value = "";
                 return false;
@@ -64,7 +77,6 @@
 
     </script>
     <style type="text/css">
-
         * {
             padding: 0;
             margin: 0;
@@ -145,6 +157,14 @@
             width: 100%;
 
         }
+        #addroom {
+            left: 3px;
+            top: 5px;
+            position: absolute;
+            width: 100px;
+            text-align: center;
+        }
+
 
         #setunamebutton {
             left: 3px;
@@ -188,41 +208,37 @@
             padding: 5px 30px 5px 10px;
             display: block;
         }
-
     </style>
 </head>
+
 <body>
-<div class="bodyCont">
-    <div id="log"></div>
-    <p id="unamelist"></p>
-    <ul id="chatRooms">
-        <li id="firstRoom">
-            <a href="#">General Chat</a>
-        </li>
-        <li id="secondRoom">
-            <a href="#">Buy and Sell</a>
-        </li>
-        <li id="thirdRoom">
-            <a href="#">Gamers Anonymous</a>
-        </li>
-        <li id="fourthRoom">
-            <a href="#">Freedom Zone</a>
-        </li>
-    </ul>
-    <div id="allbuttons">
-        <form id="form">
-            <input type="submit" value="Send" id="sendButton"/>
-            <input type="text" id="msg" size="64"/>
-        </form>
+    <div class="bodyCont">
+        <div id="log"></div>
+        <p id="unamelist"></p>
+        <button id="addroom">add chat room</button>
+        <ul id="chatRooms">
+            <li id="firstRoom">
+                <a href="#">General Chat</a>
+            </li>
+            <li id="secondRoom">
+                <a href="#">Buy and Sell</a>
+            </li>
+        </ul>
+        <div id="allbuttons">
+            <form id="form">
+                <input type="submit" value="Send" id="sendButton" />
+                <input type="text" id="msg" size="64" />
+            </form>
 
-        <div class="unameContainer">
-            <button id="setunamebutton">Set Name</button>
+            <div class="unameContainer">
+                <button id="setunamebutton">Set Name</button>
 
-            <input title="username field" type="text" id="unamefield" size="64"/>
+                <input title="username field" type="text" id="unamefield" size="64" />
+            </div>
         </div>
-    </div>
-    <button id="startWebsock">Start Web Socket</button>
+        <button id="startWebsock">Start Web Socket</button>
 
-</div>
+    </div>
 </body>
+
 </html>
