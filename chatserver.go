@@ -44,6 +44,11 @@ func main() {
 				return
 			}
 			connections[conn] = name
+			cm := &socketMessage{
+				Messagetype: "chatrooms",
+				Payload:     rooms}
+			jcm, _ := json.Marshal(cm)
+			conn.WriteMessage(websocket.TextMessage, jcm)
 			fmt.Println(name, " connected, current users ", connections)
 			doeet := func() {
 				users := []string{}
