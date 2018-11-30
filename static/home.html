@@ -6,6 +6,7 @@
     <script type="text/javascript">
         window.onload = function () {
             var username = "default userio"
+            var currentRoom = "main room"
             var conn;
             var msg = document.getElementById("msg");
             var log = document.getElementById("log");
@@ -20,7 +21,7 @@
                     conn.onmessage = function (evt) {
                         var item = document.createElement("div");
                         var obm = JSON.parse(evt.data)
-                        if (obm["Messagetype"] == "chat") {
+                        if (obm["Messagetype"] == "chat" && obm["Inroom"]==currentRoom) {
                             item.innerText = obm["Payload"];
                             appendLog(item);
                         } else if (obm["Messagetype"] == "users") {
@@ -76,7 +77,7 @@
                     return false;
                 }
                 var messy = msg.value;
-                var finmess = JSON.stringify({ Messagetype: "chat", Payload: messy });
+                var finmess = JSON.stringify({ Messagetype: "chat", Payload: messy, Inroom:currentRoom });
                 conn.send(finmess);
                 msg.value = "";
                 return false;

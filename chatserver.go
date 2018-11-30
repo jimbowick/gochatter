@@ -28,6 +28,11 @@ func main() {
 		Messagetype string
 		Payload     string
 	}
+	type messwithRoom struct {
+		Messagetype string
+		Payload     string
+		Inroom      string
+	}
 	http.HandleFunc(
 		"/ws",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +71,7 @@ func main() {
 					}
 					message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
 					println(name, "sent ", string(message))
-					result := &basicsockMess{}
+					result := &messwithRoom{}
 					json.Unmarshal(message, result)
 					if result.Messagetype == "roomname" {
 						rooms = append(rooms, result.Payload)
@@ -80,9 +85,10 @@ func main() {
 					} else {
 						for conny := range connections {
 							finny := name + ": " + string(result.Payload)
-							jg := &basicsockMess{
+							jg := &messwithRoom{
 								Messagetype: "chat",
 								Payload:     finny,
+								Inroom:      result.Inroom,
 							}
 							jgg, _ := json.Marshal(jg)
 							conny.WriteMessage(websocket.TextMessage, jgg)
