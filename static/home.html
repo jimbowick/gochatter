@@ -49,7 +49,12 @@
                 document.getElementById("chatRooms").innerHTML = "";
                 rooms.forEach(function (str) {
                     var listitem = document.createElement("li");
-                    listitem.innerHTML = str
+                    var but = document.createElement("button")
+                    but.innerHTML = str
+                    but.onclick = function(){
+                        currentRoom = str
+                    }
+                    listitem.appendChild(but)
                     document.getElementById("chatRooms").appendChild(listitem)
                 });
             }
