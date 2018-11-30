@@ -12,6 +12,7 @@ import (
 
 func main() {
 	var connections = make(map[*websocket.Conn]string)
+	rooms := []string{"main roomy", "second roomy"}
 	http.HandleFunc(
 		"/home",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +22,11 @@ func main() {
 	type socketMessage struct {
 		Messagetype string
 		Payload     []string
+	}
+
+	type basicsockMess struct {
+		Messagetype string
+		Payload     string
 	}
 	http.HandleFunc(
 		"/ws",
@@ -60,25 +66,33 @@ func main() {
 					}
 					message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
 					println(name, "sent ", string(message))
-
-					//if messagetype roomname, add chat room
-
-					rooms := []string{"main roomy", "second roomy"}
-					sm := &socketMessage{
-						Messagetype: "chatrooms",
-						Payload:     rooms}
-					jsm, _ := json.Marshal(sm)
-					for conny := range connections {
-						conny.WriteMessage(websocket.TextMessage, jsm)
+					result := &basicsockMess{}
+					json.Unmarshal(message, result)
+					if result.Messagetype == "roomname" {
+						rooms = append(rooms, result.Payload)
+						sm := &socketMessage{
+							Messagetype: "chatrooms",
+							Payload:     rooms}
+						jsm, _ := json.Marshal(sm)
+						for conny := range connections {
+							conny.WriteMessage(websocket.TextMessage, jsm)
+						}
+					} else {
+						for conny := range connections {
+							finny := name + ": " + string(result.Payload)
+							jg := &basicsockMess{
+								Messagetype: "chat",
+								Payload:     finny,
+							}
+							jgg, _ := json.Marshal(jg)
+							conny.WriteMessage(websocket.TextMessage, jgg)
+						}
 					}
-					for conny := range connections {
-						conny.WriteMessage(websocket.TextMessage, message)
-					}
+
 				}
 			}()
 		},
 	)
-
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
