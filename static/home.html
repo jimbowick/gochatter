@@ -53,19 +53,27 @@
                 rooms.forEach(function (str) {
                     var listitem = document.createElement("li");
                     var but = document.createElement("button");
-                    but.innerHTML = str
-                    but.onclick = function(){
-                        currentRoom = str
+                    but.innerHTML = str;
+                    but.onclick = function () {
+                        currentRoom = str;
+                        document.getElementById("log").innerHTML = "";
                     };
                     listitem.appendChild(but);
                     document.getElementById("chatRooms").appendChild(listitem)
                 });
             }
+
             function refreshUsers(users) {
                 document.getElementById("unamelist").innerHTML = "";
                 users.forEach(function (str) {
                     var listitem = document.createElement("li");
-                    listitem.innerHTML = str;
+                    var but = document.createElement("button");
+                    but.innerHTML = str;
+                    but.onclick = function () {
+                        currentRoom = str;
+                        document.getElementById("log").innerText="";
+                    };
+                    listitem.appendChild(but);
                     document.getElementById("unamelist").appendChild(listitem)
                 });
             }
@@ -77,6 +85,7 @@
                     log.scrollTop = log.scrollHeight - log.clientHeight;
                 }
             }
+
             document.getElementById("form").onsubmit = function () {
                 if (!conn) {
                     return false;
@@ -135,6 +144,9 @@
         }
 
         #unamelist {
+            box-sizing: border-box;
+            padding-top: 10px;
+            text-align: center;
             min-width: 200px;
             max-width: 200px;
             max-height: 250px;
@@ -225,6 +237,8 @@
         }
 
         #chatRooms {
+            box-sizing: border-box;
+            padding-top: 10px;
             text-align: center;
             min-width: 200px;
             min-height: 100px;

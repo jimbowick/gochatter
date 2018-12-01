@@ -88,8 +88,8 @@ func main() {
 							conny.WriteMessage(websocket.TextMessage, jsm)
 						}
 					} else if result.Messagetype == "chat" {
-						for conny, anm := range connections {
-							finny := anm + ": " + string(result.Payload)
+						for conny := range connections {
+							finny := connections[conn] + ": " + string(result.Payload)
 							jg := &messwithRoom{
 								Messagetype: "chat",
 								Payload:     finny,
