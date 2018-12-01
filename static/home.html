@@ -115,6 +115,8 @@
                     but.onclick = function () {
                         document.getElementById("currentroomName").innerHTML = str;
                         document.getElementById("log").innerHTML = "";
+                        var finmess = JSON.stringify({Messagetype: "Acceptinvite", Payload: str});
+                        conn.send(finmess);
                     };
                     listitem.appendChild(but);
                     document.getElementById("inviteList").appendChild(listitem)
