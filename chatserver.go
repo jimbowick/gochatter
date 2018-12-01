@@ -11,7 +11,9 @@ import (
 )
 
 func main() {
+
 	var connections = make(map[*websocket.Conn]string)
+
 	rooms := []string{"main roomy", "second roomy"}
 	http.HandleFunc(
 		"/home",
@@ -101,6 +103,8 @@ func main() {
 					} else if result.Messagetype == "setName" {
 						connections[conn] = result.Payload
 						sendUserRefresh()
+					} else if result.Messagetype == "invite" {
+
 					}
 				}
 			}()

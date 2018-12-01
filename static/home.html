@@ -23,26 +23,25 @@
                     var item = document.createElement("div");
                     var obm = JSON.parse(evt.data);
                     if (obm["Messagetype"] === "chat") {
-                        if (obm["Inroom"] === currentRoom) {
+                        var chatInRoom = obm["Inroom"];
+                        if (chatInRoom === currentRoom) {
                             item.innerText = obm["Payload"];
                             appendLog(item);
                         }
-                        console.log(recentMsgs);
-                        var roomnamey = obm["Inroom"];
-                        console.log(roomnamey);
-                        if (recentMsgs.has(roomnamey)) {
-                            var existingMessages = recentMsgs.get(roomnamey);
-                            console.log(existingMessages);
+                        if (recentMsgs.has(chatInRoom)) {
+                            var existingMessages = recentMsgs.get(chatInRoom);
                             existingMessages.push(obm["Payload"]);
-                            recentMsgs.set(roomnamey, existingMessages);
+                            recentMsgs.set(chatInRoom, existingMessages);
                         } else {
                             var fresharray = [obm["Payload"]];
-                            recentMsgs.set(roomnamey, fresharray);
+                            recentMsgs.set(chatInRoom, fresharray);
                         }
                     } else if (obm["Messagetype"] === "users") {
                         refreshUsers(obm["Payload"])
                     } else if (obm["Messagetype"] === "chatrooms") {
                         refreshRooms(obm["Payload"])
+                    }else if (obm["Messagetype"] === "invite") {
+                        refreshInvites(obm["Payload"])
                     }
                 };
             } else {
@@ -61,11 +60,10 @@
                 newroomValue = document.getElementById("newroomName").value;
                 var finmess = JSON.stringify({Messagetype: "roomname", Payload: newroomValue});
                 conn.send(finmess)
-            }
+            };
 
 
             function refreshRooms(rooms) {
-
                 document.getElementById("chatRooms").innerHTML = "";
                 rooms.forEach(function (str) {
                     var listitem = document.createElement("li");
@@ -73,8 +71,8 @@
                     but.innerHTML = str;
                     but.onclick = function () {
                         currentRoom = str;
+                        document.getElementById("currentroomName").innerHTML = str;
                         document.getElementById("log").innerHTML = "";
-                        document.getElementById("currentroomName").innerHTML = currentRoom;
                         if (recentMsgs.has(str)) {
                             var messies = recentMsgs.get(str);
                             messies.forEach(function (val, key, map) {
@@ -96,11 +94,26 @@
                     var but = document.createElement("button");
                     but.innerHTML = str;
                     but.onclick = function () {
-                        currentRoom = str;
+                        var finmess = JSON.stringify({MessageType:"invite", Payload:str, RoomName:currentRoom});
+                        conn.send(finmess);
                         document.getElementById("log").innerText = "";
                     };
                     listitem.appendChild(but);
                     document.getElementById("unamelist").appendChild(listitem)
+                });
+            }
+            function refreshInvites(invites) {
+                document.getElementById("inviteList").innerHTML = "";
+                invites.forEach(function (str) {
+                    var listitem = document.createElement("li");
+                    var but = document.createElement("button");
+                    but.innerHTML = str;
+                    but.onclick = function () {
+                        document.getElementById("currentroomName").innerHTML = str;
+                        document.getElementById("log").innerHTML = "";
+                    };
+                    listitem.appendChild(but);
+                    document.getElementById("inviteList").appendChild(listitem)
                 });
             }
 
@@ -167,6 +180,15 @@
             top: 100px;
             left: 49px;
             overflow: auto;
+        }
+
+        #inviteList {
+            position: absolute;
+            left: 755px;
+            top: 100px;
+            width: 200px;
+            height: 300px;
+            background-color: white;
         }
 
         #unamelist {
@@ -254,14 +276,6 @@
             text-align: center;
         }
 
-        #startWebsock {
-            width: 100px;
-            padding: 2px;
-            position: absolute;
-            top: 4px;
-            left: 255px;
-        }
-
         #chatRooms {
             box-sizing: border-box;
             padding-top: 10px;
@@ -289,6 +303,7 @@
 <div class="bodyCont">
     <div id="log"></div>
     <div id="currentroomName"></div>
+    <div id="inviteList"></div>
     <ul id="unamelist"></ul>
     <button id="addroom">add chat room</button>
     <input type="text" id="newroomName">
@@ -312,7 +327,6 @@
             <input title="username field" type="text" id="unamefield" size="64"/>
         </div>
     </div>
-    <button id="startWebsock">Start Web Socket</button>
 
 </div>
 </body>
