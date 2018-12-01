@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Chat Example</title>
+    <title>Go Chatter</title>
     <script type="text/javascript">
         window.onload = function () {
             var recentMsgs = new Map([]);
@@ -65,6 +65,7 @@
 
 
             function refreshRooms(rooms) {
+
                 document.getElementById("chatRooms").innerHTML = "";
                 rooms.forEach(function (str) {
                     var listitem = document.createElement("li");
@@ -73,9 +74,10 @@
                     but.onclick = function () {
                         currentRoom = str;
                         document.getElementById("log").innerHTML = "";
+                        document.getElementById("currentroomName").innerHTML = currentRoom;
                         if (recentMsgs.has(str)) {
                             var messies = recentMsgs.get(str);
-                            messies.forEach(function (val,key,map) {
+                            messies.forEach(function (val, key, map) {
                                 var divvy = document.createElement("div");
                                 divvy.innerHTML = val;
                                 appendLog(divvy)
