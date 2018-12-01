@@ -22,6 +22,7 @@
                 conn.onmessage = function (evt) {
                     var item = document.createElement("div");
                     var obm = JSON.parse(evt.data);
+                    console.log(obm);
                     if (obm["Messagetype"] === "chat") {
                         var chatInRoom = obm["Inroom"];
                         if (chatInRoom === currentRoom) {
@@ -40,7 +41,8 @@
                         refreshUsers(obm["Payload"])
                     } else if (obm["Messagetype"] === "chatrooms") {
                         refreshRooms(obm["Payload"])
-                    }else if (obm["Messagetype"] === "invite") {
+                    }else if (obm["Messagetype"] === "invites") {
+                        console.log("got invites")
                         refreshInvites(obm["Payload"])
                     }
                 };
@@ -94,7 +96,7 @@
                     var but = document.createElement("button");
                     but.innerHTML = str;
                     but.onclick = function () {
-                        var finmess = JSON.stringify({MessageType:"invite", Payload:str, RoomName:currentRoom});
+                        var finmess = JSON.stringify({MessageType:"invite", Payload:str, Inroom:currentRoom});
                         conn.send(finmess);
                         document.getElementById("log").innerText = "";
                     };
@@ -103,6 +105,8 @@
                 });
             }
             function refreshInvites(invites) {
+                console.log("refrehing invites")
+                console.log(invites)
                 document.getElementById("inviteList").innerHTML = "";
                 invites.forEach(function (str) {
                     var listitem = document.createElement("li");

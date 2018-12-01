@@ -11,10 +11,13 @@ import (
 )
 
 func main() {
-
-	var connections = make(map[*websocket.Conn]string)
-
+	type user struct {
+		username     string
+		invitedrooms []string
+	}
+	var connections = make(map[*websocket.Conn]*user)
 	rooms := []string{"main roomy", "second roomy"}
+
 	http.HandleFunc(
 		"/home",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +38,11 @@ func main() {
 		Payload     string
 		Inroom      string
 	}
+	type inInvite struct {
+		Messagetype string
+		Payload     string
+		Roomname    string
+	}
 	http.HandleFunc(
 		"/ws",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +53,7 @@ func main() {
 				fmt.Println(err)
 				return
 			}
-			connections[conn] = name
+			connections[conn] = &user{username: name, invitedrooms: []string{}}
 			cm := &socketMessage{
 				Messagetype: "chatrooms",
 				Payload:     rooms}
@@ -53,13 +61,14 @@ func main() {
 			conn.WriteMessage(websocket.TextMessage, jcm)
 			fmt.Println(name, " connected, current users ", connections)
 			sendUserRefresh := func() {
-				users := []string{}
+				usernames := []string{}
 				for _, usr := range connections {
-					users = append(users, usr)
+					nmy := usr.username
+					usernames = append(usernames, nmy)
 				}
 				sm := &socketMessage{
 					Messagetype: "users",
-					Payload:     users}
+					Payload:     usernames}
 				jsm, _ := json.Marshal(sm)
 				for conny := range connections {
 					conny.WriteMessage(websocket.TextMessage, jsm)
@@ -91,7 +100,7 @@ func main() {
 						}
 					} else if result.Messagetype == "chat" {
 						for conny := range connections {
-							finny := connections[conn] + ": " + string(result.Payload)
+							finny := connections[conn].username + ": " + string(result.Payload)
 							jg := &messwithRoom{
 								Messagetype: "chat",
 								Payload:     finny,
@@ -101,9 +110,20 @@ func main() {
 							conny.WriteMessage(websocket.TextMessage, jgg)
 						}
 					} else if result.Messagetype == "setName" {
-						connections[conn] = result.Payload
+						connections[conn].username = result.Payload
 						sendUserRefresh()
 					} else if result.Messagetype == "invite" {
+						for conny, boy := range connections {
+							if boy.username == result.Payload {
+								connections[conny].invitedrooms = append(connections[conny].invitedrooms, result.Inroom)
+								sm := &socketMessage{
+									Messagetype: "invites",
+									Payload:     connections[conny].invitedrooms}
+								jsm, _ := json.Marshal(sm)
+								fmt.Println("inviting ", string(jsm))
+								conny.WriteMessage(websocket.TextMessage, jsm)
+							}
+						}
 
 					}
 				}
