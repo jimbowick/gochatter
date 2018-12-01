@@ -113,6 +113,7 @@
                     var but = document.createElement("button");
                     but.innerHTML = str;
                     but.onclick = function () {
+                        currentRoom = str;
                         document.getElementById("currentroomName").innerHTML = str;
                         document.getElementById("log").innerHTML = "";
                         var finmess = JSON.stringify({Messagetype: "Acceptinvite", Payload: str});
