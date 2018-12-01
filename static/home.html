@@ -7,6 +7,7 @@
         window.onload = function () {
             var recentMsgs = new Map([]);
             var username = "default userio";
+            document.getElementById("myName").innerHTML = username;
             var currentRoom = "main roomy";
             var conn;
             var msg = document.getElementById("msg");
@@ -41,7 +42,7 @@
                         refreshUsers(obm["Payload"])
                     } else if (obm["Messagetype"] === "chatrooms") {
                         refreshRooms(obm["Payload"])
-                    }else if (obm["Messagetype"] === "invites") {
+                    } else if (obm["Messagetype"] === "invites") {
                         console.log("got invites")
                         refreshInvites(obm["Payload"])
                     }
@@ -55,6 +56,7 @@
 
             document.getElementById("setunamebutton").onclick = function () {
                 username = document.getElementById("unamefield").value;
+                document.getElementById("myName").innerHTML = username;
                 var finmess = JSON.stringify({Messagetype: "setName", Payload: username});
                 conn.send(finmess)
             };
@@ -96,7 +98,7 @@
                     var but = document.createElement("button");
                     but.innerHTML = str;
                     but.onclick = function () {
-                        var finmess = JSON.stringify({MessageType:"invite", Payload:str, Inroom:currentRoom});
+                        var finmess = JSON.stringify({MessageType: "invite", Payload: str, Inroom: currentRoom});
                         conn.send(finmess);
                         document.getElementById("log").innerText = "";
                     };
@@ -104,6 +106,7 @@
                     document.getElementById("unamelist").appendChild(listitem)
                 });
             }
+
             function refreshInvites(invites) {
                 console.log("refrehing invites")
                 console.log(invites)
@@ -176,13 +179,13 @@
         }
 
         #log {
+            box-sizing: border-box;
+            padding: 8px;
             min-width: 500px;
             max-width: 500px;
             max-height: 500px;
             min-height: 300px;
             background: white;
-            /*margin: 5em;*/
-            /*padding: 0.5em 0.5em 0.5em 0.5em;*/
             position: absolute;
             top: 100px;
             left: 49px;
@@ -190,6 +193,10 @@
         }
 
         #inviteList {
+            list-style: none;
+            box-sizing: border-box;
+            padding-top: 10px;
+            text-align: center;
             position: absolute;
             left: 755px;
             top: 100px;
@@ -213,15 +220,6 @@
             overflow: auto;
         }
 
-        #form {
-            display: block;
-            position: absolute;
-            /*left: 210px;*/
-            /*top: 50px;*/
-            max-width: 50%;
-            min-width: 50%;
-
-        }
 
         #msg {
             position: absolute;
@@ -243,27 +241,26 @@
             left: 112px;
         }
 
-        .unameContainer {
-            /*left: 210px;*/
-            /*top: 20px;*/
-            /*position: absolute;*/
-            max-width: 50%;
-            min-width: 50%;
-
-        }
-
-        #allbuttons {
-            display: block;
+        #myName {
+            box-sizing: border-box;
+            padding-top: 14px;
+            text-align: center;
             position: absolute;
-            width: 100%;
-
+            top: 50px;
+            left: 600px;
+            background-color: white;
+            height: 45px;
+            width: 150px;
         }
+
+
 
         #addroom {
             left: 3px;
             top: 5px;
             position: absolute;
-            width: 100px;
+            width: 110px;
+            length: 100px;
             text-align: center;
         }
 
@@ -303,16 +300,25 @@
             padding: 5px 30px 5px 10px;
             display: block;
         }
+
+        input[type="button"], button, input[type="submit"] {
+            box-sizing: border-box;
+            width: 110px;
+            length: 100px;
+            padding: 1px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 
 <body>
 <div class="bodyCont">
+    <div id="myName"></div>
     <div id="log"></div>
     <div id="currentroomName"></div>
     <div id="inviteList"></div>
     <ul id="unamelist"></ul>
-    <button id="addroom">add chat room</button>
+    <button id="addroom">Add Chat Room</button>
     <input type="text" id="newroomName">
     <ul id="chatRooms">
         <li id="firstRoom">
