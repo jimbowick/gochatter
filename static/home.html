@@ -5,8 +5,9 @@
     <title>Chat Example</title>
     <script type="text/javascript">
         window.onload = function () {
+            var recentMsgs = new Map([]);
             var username = "default userio";
-            var currentRoom = "main room";
+            var currentRoom = "main roomy";
             var conn;
             var msg = document.getElementById("msg");
             var log = document.getElementById("log");
@@ -21,12 +22,26 @@
                 conn.onmessage = function (evt) {
                     var item = document.createElement("div");
                     var obm = JSON.parse(evt.data);
-                    if (obm["Messagetype"] == "chat" && obm["Inroom"] == currentRoom) {
-                        item.innerText = obm["Payload"];
-                        appendLog(item);
-                    } else if (obm["Messagetype"] == "users") {
+                    if (obm["Messagetype"] === "chat") {
+                        if (obm["Inroom"] === currentRoom) {
+                            item.innerText = obm["Payload"];
+                            appendLog(item);
+                        }
+                        console.log(recentMsgs);
+                        var roomnamey = obm["Inroom"];
+                        console.log(roomnamey);
+                        if (recentMsgs.has(roomnamey)) {
+                            var existingMessages = recentMsgs.get(roomnamey);
+                            console.log(existingMessages);
+                            existingMessages.push(obm["Payload"]);
+                            recentMsgs.set(roomnamey, existingMessages);
+                        } else {
+                            var fresharray = [obm["Payload"]];
+                            recentMsgs.set(roomnamey, fresharray);
+                        }
+                    } else if (obm["Messagetype"] === "users") {
                         refreshUsers(obm["Payload"])
-                    } else if (obm["Messagetype"] == "chatrooms") {
+                    } else if (obm["Messagetype"] === "chatrooms") {
                         refreshRooms(obm["Payload"])
                     }
                 };
@@ -41,12 +56,13 @@
                 username = document.getElementById("unamefield").value;
                 var finmess = JSON.stringify({Messagetype: "setName", Payload: username});
                 conn.send(finmess)
-            }
+            };
             document.getElementById("addroom").onclick = function () {
                 newroomValue = document.getElementById("newroomName").value;
                 var finmess = JSON.stringify({Messagetype: "roomname", Payload: newroomValue});
                 conn.send(finmess)
             }
+
 
             function refreshRooms(rooms) {
                 document.getElementById("chatRooms").innerHTML = "";
@@ -57,6 +73,14 @@
                     but.onclick = function () {
                         currentRoom = str;
                         document.getElementById("log").innerHTML = "";
+                        if (recentMsgs.has(str)) {
+                            var messies = recentMsgs.get(str);
+                            messies.forEach(function (val,key,map) {
+                                var divvy = document.createElement("div");
+                                divvy.innerHTML = val;
+                                appendLog(divvy)
+                            })
+                        }
                     };
                     listitem.appendChild(but);
                     document.getElementById("chatRooms").appendChild(listitem)
@@ -71,7 +95,7 @@
                     but.innerHTML = str;
                     but.onclick = function () {
                         currentRoom = str;
-                        document.getElementById("log").innerText="";
+                        document.getElementById("log").innerText = "";
                     };
                     listitem.appendChild(but);
                     document.getElementById("unamelist").appendChild(listitem)
