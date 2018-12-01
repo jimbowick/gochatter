@@ -50,7 +50,7 @@ func main() {
 			jcm, _ := json.Marshal(cm)
 			conn.WriteMessage(websocket.TextMessage, jcm)
 			fmt.Println(name, " connected, current users ", connections)
-			doeet := func() {
+			sendUserRefresh := func() {
 				users := []string{}
 				for _, usr := range connections {
 					users = append(users, usr)
@@ -63,7 +63,7 @@ func main() {
 					conny.WriteMessage(websocket.TextMessage, jsm)
 				}
 			}
-			doeet()
+			sendUserRefresh()
 			go func() {
 				for {
 					_, message, err := conn.ReadMessage()
@@ -71,7 +71,7 @@ func main() {
 						fmt.Println(err, name, " disconnected")
 						delete(connections, conn)
 						conn.Close()
-						doeet()
+						sendUserRefresh()
 						return
 					}
 					message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
@@ -87,7 +87,7 @@ func main() {
 						for conny := range connections {
 							conny.WriteMessage(websocket.TextMessage, jsm)
 						}
-					} else {
+					} else if result.Messagetype == "chat" {
 						for conny := range connections {
 							finny := name + ": " + string(result.Payload)
 							jg := &messwithRoom{
@@ -98,8 +98,10 @@ func main() {
 							jgg, _ := json.Marshal(jg)
 							conny.WriteMessage(websocket.TextMessage, jgg)
 						}
+					} else if result.Messagetype == "setName" {
+						connections[conn] = result.Payload
+						sendUserRefresh()
 					}
-
 				}
 			}()
 		},
