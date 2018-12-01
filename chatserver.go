@@ -120,11 +120,24 @@ func main() {
 									Messagetype: "invites",
 									Payload:     connections[conny].invitedrooms}
 								jsm, _ := json.Marshal(sm)
-								fmt.Println("inviting ", string(jsm))
 								conny.WriteMessage(websocket.TextMessage, jsm)
 							}
 						}
 
+					} else if result.Messagetype == "Acceptinvite" {
+						var newinvites = []string{}
+						var oldinvs = connections[conn].invitedrooms
+						for _, invroom := range oldinvs {
+							if invroom != result.Payload {
+								newinvites = append(newinvites, invroom)
+							}
+						}
+						connections[conn].invitedrooms = newinvites
+						sm := &socketMessage{
+							Messagetype: "invites",
+							Payload:     connections[conn].invitedrooms}
+						jsm, _ := json.Marshal(sm)
+						conn.WriteMessage(websocket.TextMessage, jsm)
 					}
 				}
 			}()
