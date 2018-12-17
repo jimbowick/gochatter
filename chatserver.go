@@ -138,6 +138,15 @@ func main() {
 							Payload:     connections[conn].invitedrooms}
 						jsm, _ := json.Marshal(sm)
 						conn.WriteMessage(websocket.TextMessage, jsm)
+					} else if result.Messagetype == "voice" {
+						for conny := range connections {
+							jg := &basicsockMess{
+								Messagetype: "voice",
+								Payload:     result.Payload,
+							}
+							jgg, _ := json.Marshal(jg)
+							conny.WriteMessage(websocket.TextMessage, jgg)
+						}
 					}
 				}
 			}()
